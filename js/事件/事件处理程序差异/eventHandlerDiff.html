@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<button id="btn">哈哈哈哈</button>
+
+<script>
+    const btn = document.getElementById('btn');
+
+    //DOM0事件处理程序
+    // btn.onclick = function(event) {
+    //     console.log(this === btn);
+    //     console.log(window.event.srcElement === this);
+    //     console.log('event', event);
+    //     console.log('window.event', window.event);
+    // }
+
+    // IE事件处理程序
+    // btn.attachEvent('onclick', function(event) {
+    //     console.log(event.srcElement === this)
+    // })
+
+    // DOM2中的事件处理程序
+    btn.addEventListener('click', function() {
+        console.log('this', this);
+        console.log('event', event);
+        console.log(this === btn);
+        console.log(event.currentTarget === this);
+    })
+</script>
+
+</body>
+</html>
