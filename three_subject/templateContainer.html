@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ThreeJs学习</title>
+</head>
+<body>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "./three.js/build/three.module.js",
+            "three/addons/": "./three.js/examples/jsm/"
+        }
+    }
+</script>
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+    console.log(THREE.Scene);
+    console.log(OrbitControls);
+</script>
+</body>
+</html>
