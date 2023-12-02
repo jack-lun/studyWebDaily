@@ -3,22 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>第一课：HelloWorld</title>
-    <div id="app"></div>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/vue-router@4"></script>
+
 </head>
 <body>
-<div id="root">
-    <h1>Hello {{name}}</h1>
+
+<div id="app">
+    <h1>Hello App!</h1>
+    <p>
+        <!--使用 router-link 组件进行导航 -->
+        <!--通过传递 `to` 来指定链接 -->
+        <!--`<router-link>` 将呈现一个带有正确 `href` 属性的 `<a>` 标签-->
+        <router-link to="/">Go to Home</router-link>
+        <router-link to="/about">Go to About</router-link>
+    </p>
+    <!-- 路由出口 -->
+    <!-- 路由匹配到的组件将渲染在这里 -->
+    <router-view></router-view>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
 <script>
-    Vue.config.productionTip = false; //关闭生产提示
-    // 创建Vue实例
-    new Vue({
-        el: '#root',
-        data: {
-            name: '尚硅谷1234'
-        }
-    })
+
 </script>
 
 </body>
