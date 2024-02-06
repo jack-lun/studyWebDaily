@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 500px;
+            height: 100px;
+            background-color: #55aaff;
+            margin: 0 auto;
+        }
+        .wrap {
+            width: 500px;
+            height: 500px;
+            background-color: #7F7FFF;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .point {
+            width: 50px;
+            height: 50px;
+            background-color: #6F0752;
+            position: absolute;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="box"></div>
+<div class="wrap" id="wrap">
+    <div class="point" id="point"></div>
+</div>
+
+<script>
+    const wrap = document.getElementById('wrap');
+    const point = document.getElementById('point');
+    let prePosition = {
+        x: 0,
+        y: 0
+    };
+
+    let curPosition = {
+        x: 0,
+        y: 0
+    };
+
+    let moveLeft = 0, moveTop = 0;
+    let distanceX = 0, distanceY = 0;
+
+    let isDragging = false;
+
+    const { x, y, width, height } = wrap.getBoundingClientRect();
+    console.log('hahahah', wrap.getBoundingClientRect(), wrap.getClientRects());
+
+    point.addEventListener('mousedown', (e) => {
+        console.log('!!!!!!1111', e.offsetX);
+        isDragging = true;
+        distanceX = e.offsetX - 50 / 2;
+        distanceY = e.offsetY - 50;
+        prePosition.x = curPosition.x = e.clientX - e.offsetX + 50 / 2;
+        prePosition.y = curPosition.y = e.clientY - e.offsetY + 50;
+    });
+
+    wrap.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        curPosition.x = e.clientX - distanceX;
+        curPosition.y = e.clientY - distanceY;
+
+        moveLeft += curPosition.x - prePosition.x;
+        moveTop += curPosition.y - prePosition.y;
+
+        console.log('curPosition.x, x', curPosition.x, x);
+
+        point.style.top = moveTop + 'px';
+        point.style.left = moveLeft + 'px';
+
+        prePosition.x = curPosition.x;
+        prePosition.y = curPosition.y;
+    });
+
+    wrap.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+
+</script>
+
+</body>
+</html>

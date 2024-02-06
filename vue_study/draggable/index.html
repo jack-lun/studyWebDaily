@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+
+        .wrap {
+            width: 700px;
+            height: 700px;
+            background-color: #6c6c6c;
+            position: relative;
+        }
+        .left-box {
+            width: 200px;
+            height: 400px;
+            background-color: #2c3e50;
+            border: 2px solid #000000;
+            padding: 24px;
+        }
+
+        .left-item {
+            width: 152px;
+            height: 24px;
+            background-color: #55aaff;
+        }
+    </style>
+</head>
+<body>
+<script type="text/javascript">
+    function drag(e) {
+        e.dataTransfer.setData('Text', e.target.id);
+    }
+
+    function allowDrop(e) {
+        e.preventDefault();
+    }
+
+    function drop(e) {
+        e.preventDefault();
+        const data = e.dataTransfer.getData('Text');
+        const copyData = document.getElementById(data)
+        copyData.style.position = 'absolute';
+        copyData.style.left = e.offsetX + 'px';
+        copyData.style.top = e.offsetY + 'px';
+        e.target.appendChild(document.getElementById(data));
+    }
+
+</script>
+<div id="divWrap" class="wrap" ondragover="allowDrop(event)" ondrop="drop(event)">
+    <div class="left-box">
+        <div id="drag1" draggable="true" class="left-item" ondragstart="drag(event)"></div>
+    </div>
+</div>
+</body>
+</html>

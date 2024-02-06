@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .video-wrap {
+            position: relative;
+            width: 440px;
+            height: 400px;
+            padding: 20px;
+            border: 2px solid #8abeb7;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin: 0 auto;
+            margin-top: 200px;
+        }
+
+        .video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: none;
+        }
+
+        .mask {
+            width: 100%;
+            height: 300px;
+            background: #3d3d3d;
+        }
+
+        .progress {
+            height: 4px;
+            display: none;
+            cursor: pointer;
+            margin-top: 8px;
+            background-color: dimgray;
+        }
+
+        .process-bar {
+            height: 100%;
+            position: relative;
+            width: 0;
+            background-color: #54A458;
+        }
+
+        .bar-circle  {
+            position: absolute;
+            top: -1px;
+            right: -3px;
+            width: 6px;
+            height: 6px;
+            background-color: #54A458;
+            border-radius: 50%;
+        }
+
+        .tool {
+            height: 40px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            background: #7F7FFF;
+            padding-left: 8px;
+            padding-right: 8px;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+
+        .upload {
+            display: none;
+        }
+
+        .tool-item {
+            user-select: none;
+            height: 24px;
+            width: 60px;
+            border-radius: 4px;
+            background: #55aaff;
+            text-align: center;
+            line-height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .a-m-l-md {
+            margin-left: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="video-wrap">
+    <video id="video" class="video"></video>
+    <div id="mask" class="mask"></div>
+    <div id="progress" class="progress">
+        <div id="progressBar" class="process-bar">
+            <div id="barCircle" class="bar-circle"></div>
+        </div>
+    </div>
+    <div class="tool">
+        <div id="uploadBtn" class="tool-item">上传</div>
+        <div id="playBtn" class="tool-item a-m-l-md">播放</div>
+        <div id="pauseBtn" class="tool-item a-m-l-md">暂停</div>
+    </div>
+</div>
+<input id="uploadInput" type="file" class="upload" accept="video/*">
+<script>
+
+    // 获取元素
+    function $(id) {
+        return document.getElementById(id);
+    }
+
+    const video = $('video');
+    const progressBar = $('progressBar');
+    const progress = $('progress');
+    const barCircle = $('barCircle');
+    let timer = null;
+
+    // 播放
+    function handlePlayVideo() {
+        video.play();
+        if (timer) {
+            clearInterval(timer);
+        }
+        timer = setInterval(run, 1000);
+    }
+
+    // 暂停
+    function handlePauseVideo() {
+        video.pause();
+        clearInterval(timer);
+        timer = null;
+    }
+
+    // 进度条运动函数
+    function run() {
+        const totalDuration = video.duration; // 视频总时长
+        const currentTime = video.currentTime; // 视频当前播放时长
+        progressBar.style.width = (totalDuration - currentTime) < 0.5 ? '100%' :  `${(currentTime / totalDuration) * 100}%`;
+    }
+
+    // 上传视频
+    const uploadBtn = $('uploadBtn');
+    const uploadInput = $('uploadInput');
+    uploadBtn.addEventListener('click', () => {
+        uploadInput.click();
+    });
+    uploadInput.addEventListener('change', (event) => {
+        const mask = $('mask');
+        const img = event.target.files[0];
+        const reader = new FileReader();
+        mask.style.display = 'none';
+        video.style.display = 'block';
+        progress.style.display = 'block';
+
+        reader.readAsDataURL(img);
+        reader.onload = function (e) {
+            video.src = e.target.result;
+        }
+    });
+
+    // 点击进度条，控制视频播放进度
+    progress.addEventListener('click', (e) => {
+        const oEvent = e || event;
+        const x = oEvent.clientX;
+        const { left, width } = progress.getBoundingClientRect();
+        progressBar.style.width = (x - left) / width * 100 + '%';
+        video.currentTime = video.duration * ((x - left) / width);
+    }, false);
+
+    // 拖拽快进或后退视频
+    let start = {
+        x: 0
+    };
+    let end = {
+        x: 0
+    }
+    barCircle.addEventListener('mousedown', (e) => {
+        const oEvent = e || event;
+        start.x = oEvent.clientX;
+        end.x = oEvent.clientX;
+    });
+
+    barCircle.addEventListener('mousemove', (e) => {
+        const { width: barWidth } = progressBar.getBoundingClientRect();
+        const { width: progressWidth } = progress.getBoundingClientRect();
+        console.log('')
+        const oEvent = e || event;
+        end.x = oEvent.clientX;
+        const left = end.x - start.x;
+        progressBar.style.width = (barWidth + left) / progressWidth * 100 + 'px';
+    });
+
+
+
+
+
+    // 播放视频
+    const playBtn = document.getElementById('playBtn');
+    playBtn.addEventListener('click', handlePlayVideo);
+
+    // 暂停播放
+    const pauseBtn = document.getElementById('pauseBtn');
+    pauseBtn.addEventListener('click', handlePauseVideo);
+
+
+</script>
+
+</body>
+</html>

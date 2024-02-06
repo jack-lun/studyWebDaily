@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+    <style>
+        .wrap {
+            width: 90vw;
+            margin: 0 auto;
+            margin-top: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .title {
+            font-size: 20px;
+            line-height: 20px;
+            font-weight: 700;
+            color: #1A1A1A
+        }
+        .barChart {
+            width: calc(100% - 100px);
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="title">大乐透以往100期前后区各号码出现频率统计</div>
+    <div id="barChart" class="barChart"></div>
+</div>
+<script>
+    const colorMap = {
+        pre: ['#EE3B3B', '#FF1493', '#9B30FF', '#008B8B', '#90EE90'],
+        next: ['#00BFFF', '#7A67EE'],
+        normal: ['#EEE5DE']
+    };
+
+    function getBiggerNum(obj, type, colorMap) {
+        const result = {};
+        const keys = Object.keys(obj);
+        keys.sort((pre, next) => obj[next] - obj[pre]);
+        keys.forEach((key, index) => {
+            result[key] = index < colorMap[type].length ? colorMap[type][index] : colorMap.normal[0]
+        });
+        return result;
+    }
+
+    // 异步读取JSON文件
+    fetch('./daletou.json').then(response => response.json())
+        .then(data => {
+
+            // 前区
+            const preNumberObj = {};
+            for (let i = 1; i <= 35; i++) {
+                const num = i < 10 ? ('0' + i) : (i + '');
+                preNumberObj[num] = 0;
+            }
+
+            // 后区
+            const nextNumberObj = {};
+            for (let i = 1; i <= 12; i++) {
+                const num = i < 10 ? ('0' + i) : (i + '');
+                nextNumberObj[num] = 0;
+            }
+
+            const { list = [] } = data.value;
+            const result = list.map(item => item.lotteryDrawResult);
+            result.forEach(item => {
+                const tempPre = item.split(' ').slice(0, 5);
+                const tempNext = item.split(' ').slice(5);
+                tempPre.forEach(key => {
+                    preNumberObj[key] += 1;
+                });
+                tempNext.forEach(key => {
+                    nextNumberObj[key] += 1;
+                })
+            });
+
+            const xAxisData = [
+                ...Object.keys(preNumberObj).sort((pre, next) => parseInt(pre) - parseInt(next)).map(item => `前区${item}`),
+                ...Object.keys(nextNumberObj).sort((pre, next) => parseInt(pre) - parseInt(next)).map(item => `后区${item}`)
+            ];
+
+            const seriesData = xAxisData.map(item => {
+                const type = item.slice(0, 2);
+                const key = item.slice(2);
+                return {
+                    name: item,
+                    value: type === '前区' ? preNumberObj[key] : nextNumberObj[key],
+                    itemStyle: {
+                        color: type === '前区' ? getBiggerNum(preNumberObj, 'pre', colorMap)[key] : getBiggerNum(nextNumberObj, 'next', colorMap)[key]
+                    }
+                };
+            });
+
+            const myChart = echarts.init(document.getElementById('barChart'));
+            const option = {
+                xAxis: {
+                    data: xAxisData,
+                    nameLocation: 'center',
+                    axisLabel: {
+                        formatter: (value) => {
+                            return value.slice(2);
+                        }
+                    }
+                },
+                tooltip: {},
+                yAxis: {},
+                series: [
+                    {
+                        name: '统计',
+                        type: 'bar',
+                        data: seriesData,
+                        markArea: {
+                            silent: true,
+                            label: {
+                                position: 'bottom',
+                                distance: 40
+                            },
+                            data: [
+                                [
+                                    {
+                                        name: '前区号码',
+                                        xAxis: '前区01',
+                                        itemStyle: {
+                                            color: 'rgba(173, 255, 47, 0.2)'
+                                        }
+                                    },
+                                    {
+                                        xAxis: '前区35'
+                                    }
+                                ],
+                                [
+                                    {
+                                        name: '后区号码',
+                                        xAxis: '后区01',
+                                        itemStyle: {
+                                            color: 'rgba(0, 255, 255, 0.2)'
+                                        }
+                                    },
+                                    {
+                                        xAxis: '后区12'
+                                    }
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        })
+        .catch(error => console.error('Error reading JSON file:', error));
+</script>
+
+</body>
+</html>
