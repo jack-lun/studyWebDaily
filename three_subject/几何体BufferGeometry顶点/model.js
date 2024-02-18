@@ -11,16 +11,19 @@ const vertice = new Float32Array([
     0, 10, 0,
 ]);
 
-// 类型化数组定义顶点索引
-const indexes = new Uint16Array([
-    // 下面的索引值对应顶点位置数据中的顶点坐标
-    0, 1, 2, 2, 3, 0
-]);
-
 // 创建属性缓冲区对象
 const attribute = new THREE.BufferAttribute(vertice, 3); // 三个为一组表示一个点
 // 设置几何体attributes属性的位置属性
 geometry.attributes.position = attribute;
+
+// 定义顶点法线数据
+const normals = new Float32Array([
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1
+]);
+geometry.attributes.normal = new THREE.BufferAttribute(normals, 3);
 
 // 类型化数组创建顶点数据
 const indexs = new Uint16Array([
@@ -28,6 +31,14 @@ const indexs = new Uint16Array([
 ]);
 geometry.index = new THREE.BufferAttribute(indexs, 1);
 
+// 缩放
+geometry.scale(2, 2, 2);
+// 平移
+geometry.translate(10, 0, 0);
+// 旋转
+geometry.rotateX(Math.PI / 4);
+// 居中
+geometry.center();
 
 /*************************  点模型 *************************/
 // 创建点模型材质
@@ -59,9 +70,10 @@ geometry.index = new THREE.BufferAttribute(indexs, 1);
 /**************************** 面模型 ********************************/
 
 // 创建面模型材质
-const material = new THREE.MeshBasicMaterial({
-    color: 0xfff000,
-    side: THREE.DoubleSide
+const material = new THREE.MeshLambertMaterial({
+    color: 0xff000,
+    side: THREE.DoubleSide,
+    wireframe: true
 });
 // 创建面模型
 const mesh = new THREE.Mesh(geometry, material);
